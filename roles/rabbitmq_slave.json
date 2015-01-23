@@ -1,0 +1,19 @@
+{
+  "name": "rabbitmq_slave",
+  "json_class": "Chef::Role",
+  "description": "",
+  "chef_type": "role",
+  "default_attributes": {
+    "rabbitmq-cluster" : {
+      "node_type": "slave",
+      "master_node_name": "rabbit@rabbit1"
+    }
+  },
+  "override_attributes": {
+  },
+  "run_list": [
+    "recipe[rabbitmq-cluster::default]"
+  ],
+  "env_run_lists": {
+  }
+}

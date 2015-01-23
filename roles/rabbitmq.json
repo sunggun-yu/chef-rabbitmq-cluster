@@ -1,0 +1,52 @@
+{
+  "name": "rabbitmq",
+  "json_class": "Chef::Role",
+  "description": "",
+  "chef_type": "role",
+  "default_attributes": {
+    "rabbitmq" : {
+      "cluster" : true,
+      "erlang_cookie" : "EKTHGEVXEMYWBKFAKSKJ",
+      "enabled_users" : [
+        {
+          "name" : "admin",
+          "password" : "admin",
+          "rights" : [
+            {
+              "vhost" : "/",
+              "conf" : ".*",
+              "write" : ".*",
+              "read" : ".*"
+            }
+          ],
+          "tag" : "administrator"
+        }
+      ],
+      "enabled_plugins" : [
+        "rabbitmq_management",
+        "rabbitmq_management_visualiser"
+      ],
+      "policies" : {
+        "ha-all" : {
+          "pattern" : "^(?!amq\\.).*",
+          "params" : {
+            "ha-mode" : "all",
+            "ha-sync-mode" : "automatic"
+          },
+          "priority" : 0
+        }
+      }
+    }
+  },
+  "override_attributes": {
+  },
+  "run_list": [
+    "recipe[rabbitmq::default]",
+    "recipe[rabbitmq::user_management]",
+    "recipe[rabbitmq::policy_management]",
+    "recipe[rabbitmq::plugin_management]",
+    "recipe[rabbitmq::mgmt_console]"
+  ],
+  "env_run_lists": {
+  }
+}
