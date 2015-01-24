@@ -1,4 +1,9 @@
 
+## rabbitmq default attributes
+# clustering
+default['rabbitmq']['cluster'] = true
+default['rabbitmq']['erlang_cookie'] = 'AnyAlphaNumericStringWillDo'
+
 ## rabbitmq-cluster default attributes
 
 # Node type : master | slave

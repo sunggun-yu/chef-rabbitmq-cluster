@@ -34,7 +34,6 @@ Vagrant.configure('2') do |config|
   end
 
   config.vm.define :rabbit2 do |rabbit2|
-    rabbit2.vm.box = 'ubuntu/trusty64'
     rabbit2.vm.network :private_network, ip: '10.211.11.101'
     rabbit2.vm.hostname = 'rabbit2'
     rabbit2.vm.provision :hostmanager
@@ -51,7 +50,6 @@ Vagrant.configure('2') do |config|
   end
 
   config.vm.define :rabbit3 do |rabbit3|
-    rabbit3.vm.box = 'ubuntu/trusty64'
     rabbit3.vm.network :private_network, ip: '10.211.11.102'
     rabbit3.vm.hostname = 'rabbit3'
     rabbit3.vm.provision :hostmanager

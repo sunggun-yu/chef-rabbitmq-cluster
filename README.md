@@ -1,12 +1,16 @@
-# rabbitmq-cluster-cookbook
+# rabbitmq-cluster Cookbook
 
-This cookbook is wrapper of Opscode rabbitmq cookbook. it configures rabbitmq cluster by executing rabbitmqctl command.
+This cookbook is wrapper of Opscode rabbitmq cookbook. It configures rabbitmq cluster by executing rabbitmqctl command.
 
 Please take a look at the Vagrant file and roles directory as an example.
 
 ## Supported Platforms
+rabbitmq-cluster cookbook has tested on the Vagrant box in below.
 
 - ubuntu/trusty64
+- ubuntu/precise64
+- chef/centos-6.5
+- chef/debian-7.7
 
 ## Attributes
 
@@ -16,6 +20,18 @@ Please take a look at the Vagrant file and roles directory as an example.
     <th>Type</th>
     <th>Description</th>
     <th>Default</th>
+  </tr>
+  <tr>
+    <td><tt>['rabbitmq']['cluster']</tt></td>
+    <td>Boolean</td>
+    <td>['rabbitmq']['cluster'] = true and ['rabbitmq']['erlang_cookie'] is required for configuring rabbitmq cluster</td>
+    <td><tt>true</tt></td>
+  </tr>
+  <tr>
+    <td><tt>['rabbitmq']['erlang_cookie']</tt></td>
+    <td>String</td>
+    <td>['rabbitmq']['cluster'] = true and ['rabbitmq']['erlang_cookie'] is required for configuring rabbitmq cluster. <br>also, all the cluster should have same erlang_cookie.</td>
+    <td><tt>AnyAlphaNumericStringWillDo</tt></td>
   </tr>
   <tr>
     <td><tt>['rabbitmq-cluster']['node_type']</tt></td>
