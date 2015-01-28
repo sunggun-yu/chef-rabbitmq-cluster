@@ -43,6 +43,7 @@ end
 execute 'join_cluster' do
   command "rabbitmqctl join_cluster --ram #{node['rabbitmq-cluster']['master_node_name']}"
   action :nothing
+  returns [0, 2]
 end
 
 execute 'change_cluster_node_type' do
