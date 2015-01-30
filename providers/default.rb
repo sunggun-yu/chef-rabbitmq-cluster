@@ -23,7 +23,7 @@ use_inline_resources
 
 # Checking node was joined in cluster
 def joined_cluster?(cluster_name)
-  cmd = "rabbitmqctl cluster_status | grep \"cluster_name\" |grep \"#{cluster_name}\""
+  cmd = "rabbitmqctl cluster_status | grep \"running_nodes,\" | grep \"#{cluster_name}\""
   cmd = Mixlib::ShellOut.new(cmd)
   cmd.environment['HOME'] = ENV.fetch('HOME', '/root')
   cmd.run_command
