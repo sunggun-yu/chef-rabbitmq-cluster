@@ -17,15 +17,14 @@
 # limitations under the License.
 #
 
-# Join in cluster : master node will be skipped.
-rabbitmq_cluster node['rabbitmq-cluster']['master_node_name'] do
-  node_type node['rabbitmq-cluster']['node_type']
-  action :join
-end
+if defined?(ChefSpec)
+  ChefSpec.define_matcher :rabbitmq_cluster
 
-# Change the cluster node type : master node will be skipped. (for now)
-rabbitmq_cluster node['rabbitmq-cluster']['master_node_name'] do
-  node_type node['rabbitmq-cluster']['node_type']
-  cluster_node_type node['rabbitmq-cluster']['cluster_node_type']
-  action :change_cluster_node_type
+  def join_cluster(resource_name)
+    ChefSpec::Matchers::ResourceMatcher.new(:rabbitmq_cluster, :join, resource_name)
+  end
+
+  def change_cluster_node_type(resource_name)
+    ChefSpec::Matchers::ResourceMatcher.new(:rabbitmq_cluster, :change_cluster_node_type, resource_name)
+  end
 end
