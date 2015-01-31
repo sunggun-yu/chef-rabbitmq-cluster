@@ -23,7 +23,9 @@ use_inline_resources
 
 # Checking node was joined in cluster
 def joined_cluster?(cluster_name)
-  cmd = "rabbitmqctl cluster_status | grep \"running_nodes,\" | grep \"#{cluster_name}\""
+  # Remove first line (Cluster status of node rabbit@rabbit2 ...) -> trim all line feed -> trim all the white space -> grep running_nodes with regex -> grep master node name
+  # rabbitmqctl cluster_status | sed "1d" | tr "\n" " " | tr -d " " | grep -o -e "{running_nodes.*]}," | grep ${master_node_name}
+  cmd = "rabbitmqctl cluster_status | sed \"1d\" | tr \"\n\" \" \" | tr -d \" \" | grep -o -e \"{running_nodes.*]},\" | grep \"#{cluster_name}\""
   cmd = Mixlib::ShellOut.new(cmd)
   cmd.environment['HOME'] = ENV.fetch('HOME', '/root')
   cmd.run_command
