@@ -21,19 +21,53 @@ include Chef::Mixin::ShellOut
 
 use_inline_resources
 
+# Get ShellOut
+def get_shellout(cmd)
+  sh_cmd = Mixlib::ShellOut.new(cmd)
+  sh_cmd.environment['HOME'] = ENV.fetch('HOME', '/root')
+  return sh_cmd
+end
+
+# Executing rabbitmqctl
+def run_rabbitmqctl(*args)
+  cmd = "rabbitmqctl #{args.join(' ')}"
+  Chef::Log.info("[rabbitmq-cluster] Executing #{cmd}")
+  cmd = get_shellout(cmd)
+  cmd.run_command
+  begin
+    cmd.error!
+    Chef::Log.info("[rabbitmq-cluster] #{cmd.stdout}")
+  rescue
+    Chef::Application.fatal!(cmd.stderr)
+  end
+end
+
 # Checking node was joined in cluster
 def joined_cluster?(cluster_name)
   # Remove first line (Cluster status of node rabbit@rabbit2 ...) -> trim all line feed -> trim all the white space -> grep running_nodes with regex -> grep master node name
   # rabbitmqctl cluster_status | sed "1d" | tr "\n" " " | tr -d " " | grep -o -e "{running_nodes.*]}," | grep ${master_node_name}
-  cmd = "rabbitmqctl cluster_status | sed \"1d\" | tr \"\n\" \" \" | tr -d \" \" | grep -o -e \"{running_nodes.*]},\" | grep \"#{cluster_name}\""
-  cmd = Mixlib::ShellOut.new(cmd)
-  cmd.environment['HOME'] = ENV.fetch('HOME', '/root')
+  cmd = get_shellout "rabbitmqctl cluster_status | sed \"1d\" | tr \"\n\" \" \" | tr -d \" \" | grep -o -e \"{running_nodes.*]},\" | grep \"#{cluster_name}\""
   cmd.run_command
   begin
     cmd.error!
     true
   rescue
     false
+  end
+end
+
+# Join cluster.
+def join_cluster(cluster_name)
+  begin
+    run_rabbitmqctl('join_cluster', '--ram', cluster_name)
+  rescue
+    err = cmd.stderr
+    Chef::Log.warn("[rabbitmq-cluster] #{err}")
+    if err.include?('{ok,already_member}')
+      Chef::Log.info('[rabbitmq-cluster] Node is already member of cluster, error will be ignored.')
+    else
+      Chef::Application.fatal!("[rabbitmq-cluster] #{err}")
+    end
   end
 end
 
@@ -44,7 +78,7 @@ def slave_node?(node_type)
   elsif node_type == 'master'
     false
   else
-    Chef::Application.fatal!('Only "slave" or "master" is possible to be applied for node type')
+    Chef::Application.fatal!('[rabbitmq-cluster] Only "slave" or "master" is possible to be applied for node type')
   end
 end
 
@@ -55,11 +89,9 @@ action :join do
   # The master node will be skipped joining cluster
   if slave_node?(new_resource.node_type)
     unless joined_cluster?(new_resource.cluster_name)
-      cmd = "rabbitmqctl stop_app && rabbitmqctl join_cluster --ram #{new_resource.cluster_name} && rabbitmqctl start_app"
-      # Join cluster as a ram node
-      execute cmd do
-        sensitive true
-      end
+      run_rabbitmqctl('stop_app')
+      join_cluster(new_resource.cluster_name)
+      run_rabbitmqctl('start_app')
     end
   end
 end
@@ -72,10 +104,8 @@ action :change_cluster_node_type do
   # Once cluster has created, master node also can change the cluster node type.
   # However, current version will skip changing cluster node type for master node.
   if slave_node?(new_resource.node_type) && joined_cluster?(new_resource.cluster_name)
-    cmd = "rabbitmqctl stop_app && rabbitmqctl change_cluster_node_type #{new_resource.cluster_node_type} && rabbitmqctl start_app"
-    # Change cluster type
-    execute cmd do
-      sensitive true
-    end
+    run_rabbitmqctl('stop_app')
+    run_rabbitmqctl('change_cluster_node_type', new_resource.cluster_node_type)
+    run_rabbitmqctl('start_app')
   end
 end
