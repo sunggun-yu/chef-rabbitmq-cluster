@@ -38,7 +38,7 @@ def run_rabbitmqctl(*args)
     cmd.error!
     Chef::Log.info("[rabbitmq-cluster] #{cmd.stdout}")
   rescue
-    Chef::Application.fatal!(cmd.stderr)
+    Chef::Application.fatal!("[rabbitmq-cluster] #{err}")
   end
 end
 
@@ -46,20 +46,29 @@ end
 def joined_cluster?(cluster_name)
   # Remove first line (Cluster status of node rabbit@rabbit2 ...) -> trim all line feed -> trim all the white space -> grep running_nodes with regex -> grep master node name
   # rabbitmqctl cluster_status | sed "1d" | tr "\n" " " | tr -d " " | grep -o -e "{running_nodes.*]}," | grep ${master_node_name}
-  cmd = get_shellout "rabbitmqctl cluster_status | sed \"1d\" | tr \"\n\" \" \" | tr -d \" \" | grep -o -e \"{running_nodes.*]},\" | grep \"#{cluster_name}\""
+  cmd = "rabbitmqctl cluster_status | sed \"1d\" | tr \"\n\" \" \" | tr -d \" \" | grep -o -e \"{running_nodes.*]},\" | grep \"#{cluster_name}\""
+  Chef::Log.info("[rabbitmq-cluster] Executing #{cmd}")
+  cmd = get_shellout(cmd)
   cmd.run_command
   begin
     cmd.error!
+    Chef::Log.info("[rabbitmq-cluster] #{cmd.stdout}")
     true
   rescue
+    Chef::Log.warn("[rabbitmq-cluster] #{cmd.stderr}")
     false
   end
 end
 
 # Join cluster.
 def join_cluster(cluster_name)
+  cmd = "rabbitmqctl join_cluster --ram #{cluster_name}"
+  Chef::Log.info("[rabbitmq-cluster] Executing #{cmd}")
+  cmd = get_shellout(cmd)
+  cmd.run_command
   begin
-    run_rabbitmqctl('join_cluster', '--ram', cluster_name)
+    cmd.error!
+    Chef::Log.info("[rabbitmq-cluster] #{cmd.stdout}")
   rescue
     err = cmd.stderr
     Chef::Log.warn("[rabbitmq-cluster] #{err}")
