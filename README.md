@@ -57,9 +57,13 @@ rabbitmq-cluster cookbook has tested on the Vagrant box in below.
 ## Usage
 
 Please take look at the roles files and Vagrant file as an example.
+
 - rabbitmq general role (default attributes for installing rabbitmq) : https://github.com/sunggun-yu/chef-rabbitmq-cluster/blob/master/roles/rabbitmq.json
+
 - rabbitmq master role : https://github.com/sunggun-yu/chef-rabbitmq-cluster/blob/master/roles/rabbitmq_master.json
+
 - rabbitmq slave role : https://github.com/sunggun-yu/chef-rabbitmq-cluster/blob/master/roles/rabbitmq_master.json
+
 - Vagrant file (as a node attributes) : https://github.com/sunggun-yu/chef-rabbitmq-cluster/blob/master/Vagrantfile
 
 ### rabbitmq-cluster::default
@@ -79,18 +83,22 @@ There are 2 LWRP for RabbitMQ cluster
 
 ### Join cluster
 Join the slave node into the cluster. It will be skipped if node is master or node is already joined in cluster. 
+
 ```
 rabbitmq_cluster node['rabbitmq-cluster']['master_node_name'] do
   node_type node['rabbitmq-cluster']['node_type']
   action :join
 end
 ```
+
 - Required resources
  - `:cluster_name` : master node name. also, it is name attribute of LWRP.
  - `:node_type` : `master` or `slave`
 
+
 ### Change cluster node type
 Change the cluser node type (`ram` | `disc`). It will be skipped if node is master or not joined in cluster.
+
 ```
 rabbitmq_cluster node['rabbitmq-cluster']['master_node_name'] do
   node_type node['rabbitmq-cluster']['node_type']
@@ -98,6 +106,7 @@ rabbitmq_cluster node['rabbitmq-cluster']['master_node_name'] do
   action :change_cluster_node_type
 end
 ```
+
 - Required resources
  - `:cluster_name` : master node name. also, it is name attribute of LWRP.
  - `:node_type` : `master` or `slave`
