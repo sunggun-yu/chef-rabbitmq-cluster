@@ -1,6 +1,16 @@
 rabbitmq-cluster Cookbook CHANGELOG
 ===========================
 
+## v0.3.0
+
+FEBRUARY 14, 2015
+
+- Refactoring
+
+- Ignore the cluster joining error that occurs when node has already joined in same cluster.
+> In this case, rabbitmqctl returns `{ok,already_member}` message.
+
+
 ## v0.2.0
 
 FEBRUARY 1, 2015
