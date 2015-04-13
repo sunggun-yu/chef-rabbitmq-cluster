@@ -16,9 +16,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+require 'spec_helper'
 
-actions :join, :change_cluster_node_type
+describe_recipe 'rabbitmq-cluster::default' do
+  let(:chef_run) { ChefSpec::SoloRunner.new(node_attributes).converge(described_recipe) }
 
-attribute :cluster_name,      :kind_of => String, name_attribute: true  # name of master node
-attribute :node_type,         :kind_of => String                        # master|save
-attribute :cluster_node_type, :kind_of => String                        # disc|ram
+  it { expect(chef_run).to join_rabbitmq_cluster('rabbit@rabbit1') }
+  it { expect(chef_run).to change_cluster_node_type_rabbitmq_cluster('rabbit@rabbit1') }
+end

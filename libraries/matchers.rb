@@ -20,11 +20,11 @@
 if defined?(ChefSpec)
   ChefSpec.define_matcher :rabbitmq_cluster
 
-  def join_cluster(resource_name)
+  def join_rabbitmq_cluster(resource_name)
     ChefSpec::Matchers::ResourceMatcher.new(:rabbitmq_cluster, :join, resource_name)
   end
 
-  def change_cluster_node_type(resource_name)
+  def change_cluster_node_type_rabbitmq_cluster(resource_name)
     ChefSpec::Matchers::ResourceMatcher.new(:rabbitmq_cluster, :change_cluster_node_type, resource_name)
   end
 end

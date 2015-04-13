@@ -16,16 +16,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-# Join in cluster : master node will be skipped.
-rabbitmq_cluster node['rabbitmq-cluster']['master_node_name'] do
-  node_type node['rabbitmq-cluster']['node_type']
-  action :join
+name = node['rabbitmq']['service_name']
+service name do
+  supports restart: true, status: true
+  action :nothing
 end
 
+# Join in cluster : master node will be skipped.
 # Change the cluster node type : master node will be skipped. (for now)
 rabbitmq_cluster node['rabbitmq-cluster']['master_node_name'] do
   node_type node['rabbitmq-cluster']['node_type']
   cluster_node_type node['rabbitmq-cluster']['cluster_node_type']
-  action :change_cluster_node_type
+  action [:join, :change_cluster_node_type, :set_cluster_name]
+  notifies :restart, "service[#{name}]", :delayed
 end
