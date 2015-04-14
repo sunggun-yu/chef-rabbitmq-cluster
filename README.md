@@ -62,7 +62,7 @@ Please take look at the roles files and Vagrant file as an example.
 
 - rabbitmq master role : https://github.com/sunggun-yu/chef-rabbitmq-cluster/blob/master/roles/rabbitmq_master.json
 
-- rabbitmq slave role : https://github.com/sunggun-yu/chef-rabbitmq-cluster/blob/master/roles/rabbitmq_master.json
+- rabbitmq slave role : https://github.com/sunggun-yu/chef-rabbitmq-cluster/blob/master/roles/rabbitmq_slave.json
 
 - Vagrant file (as a node attributes) : https://github.com/sunggun-yu/chef-rabbitmq-cluster/blob/master/Vagrantfile
 
