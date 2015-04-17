@@ -26,7 +26,7 @@ Vagrant.configure('2') do |config|
     rabbit1.vm.network :private_network, ip: '10.211.11.100'
     rabbit1.vm.hostname = 'rabbit1'
     rabbit1.vm.provision :hostmanager
-    config.vm.provision 'chef_solo' do |chef|
+    rabbit1.vm.provision 'chef_solo' do |chef|
       chef.roles_path = 'roles'
       chef.add_role('rabbitmq')
       chef.add_role('rabbitmq_master')
