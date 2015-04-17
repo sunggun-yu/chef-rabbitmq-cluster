@@ -26,7 +26,7 @@ Vagrant.configure('2') do |config|
     rabbit1.vm.network :private_network, ip: '10.211.11.100'
     rabbit1.vm.hostname = 'rabbit1'
     rabbit1.vm.provision :hostmanager
-    rabbit1.vm.provision 'chef_solo' do |chef|
+    rabbit1.vm.provision 'chef_zero' do |chef|
       chef.roles_path = 'roles'
       chef.add_role('rabbitmq')
       chef.add_role('rabbitmq_master')
@@ -37,7 +37,7 @@ Vagrant.configure('2') do |config|
     rabbit2.vm.network :private_network, ip: '10.211.11.101'
     rabbit2.vm.hostname = 'rabbit2'
     rabbit2.vm.provision :hostmanager
-    rabbit2.vm.provision 'chef_solo' do |chef|
+    rabbit2.vm.provision 'chef_zero' do |chef|
       chef.roles_path = 'roles'
       chef.json = {
           'rabbitmq-cluster' => {
@@ -53,7 +53,7 @@ Vagrant.configure('2') do |config|
     rabbit3.vm.network :private_network, ip: '10.211.11.102'
     rabbit3.vm.hostname = 'rabbit3'
     rabbit3.vm.provision :hostmanager
-    rabbit3.vm.provision 'chef_solo' do |chef|
+    rabbit3.vm.provision 'chef_zero' do |chef|
       chef.roles_path = 'roles'
       chef.json = {
           'rabbitmq-cluster' => {
