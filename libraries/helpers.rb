@@ -36,7 +36,6 @@ module RabbitmqClusterCookbook
     # @return [String] Type of the node (disc or ram).
     def rabbitmq_node_type
       command = rabbitmqctl_eval("'rabbit_mnesia:node_type().'")
-      command.error!
       command.stdout
     end
 
@@ -48,7 +47,6 @@ module RabbitmqClusterCookbook
     def joined_cluster?(node_type, cluster_name)
       return false if master?(node_type)
       command = rabbitmqctl_eval(%Q('string:equal(list_to_binary("#{cluster_name}"), rabbit_nodes:cluster_name()).'))
-      command.error!
       command.stdout == 'true'
     end
 
