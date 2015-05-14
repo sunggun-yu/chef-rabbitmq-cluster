@@ -1,30 +1,21 @@
 #
-# Cookbook Name:: rabbitmq-cluster
-# Recipe:: default
+# Cookbook: rabbitmq-cluster
+# License: Apache 2.0
 #
 # Copyright (C) 2015 Sunggun Yu
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Copyright (C) 2015 Bloomberg Finance L.P.
 #
 
 if defined?(ChefSpec)
-  ChefSpec.define_matcher :rabbitmq_cluster
-
-  def join_cluster(resource_name)
-    ChefSpec::Matchers::ResourceMatcher.new(:rabbitmq_cluster, :join, resource_name)
+  def create_rabbitmq_cluster(resource_name)
+    ChefSpec::Matchers::ResourceMatcher.new(:rabbitmq_cluster, :create, resource_name)
   end
 
-  def change_cluster_node_type(resource_name)
-    ChefSpec::Matchers::ResourceMatcher.new(:rabbitmq_cluster, :change_cluster_node_type, resource_name)
+  def delete_rabbitmq_cluster(resource_name)
+    ChefSpec::Matchers::ResourceMatcher.new(:rabbitmq_cluster, :delete, resource_name)
+  end
+
+  def update_rabbitmq_cluster(resource_name)
+    ChefSpec::Matchers::ResourceMatcher.new(:rabbitmq_cluster, :update, resource_name)
   end
 end
