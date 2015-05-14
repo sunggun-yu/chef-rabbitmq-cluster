@@ -3,13 +3,15 @@ driver:
   name: vagrant
 
 provisioner:
-  name: chef_solo
+  name: chef_zero
 
 platforms:
+  - name: ubuntu-14.04
   - name: ubuntu-12.04
   - name: centos-6.4
+  - name: centos-5.11
 
 suites:
-  - name: default
-    run_list:
-    attributes:
+  - name: master
+    run_list: 
+      - rabbitmq-cluster::master

@@ -1,11 +1,37 @@
 source 'https://rubygems.org'
 
-gem 'berkshelf'
-gem 'chef'
-gem 'chefspec'
+group :lint do
+  gem 'foodcritic'
+  gem 'rubocop'
+end
 
-group :plugins do
-  gem 'vagrant-berkshelf', github: 'berkshelf/vagrant-berkshelf'
-  gem 'vagrant-omnibus', github: 'schisamo/vagrant-omnibus'
-  gem 'vagrant-hostmanager', github: 'smdahlen/vagrant-hostmanager'
+group :kitchen_common do
+  gem 'test-kitchen', '~> 1.4'
+end
+
+group :kitchen_vagrant do
+  gem 'kitchen-vagrant', '~> 0.17'
+end
+
+group :kitchen_cloud do
+  gem 'kitchen-openstack', '~> 1.8'
+end
+
+group :unit do
+  gem 'berkshelf'
+  gem 'chefspec'
+end
+
+group :integration do
+  gem 'serverspec'
+end
+
+group :development do
+  gem 'chef-sugar'
+  gem 'chef-vault'
+  gem 'guard-kitchen'
+  gem 'guard-foodcritic'
+  gem 'guard-rspec'
+  gem 'guard-rubocop'
+  gem 'rake'
 end
