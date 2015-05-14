@@ -7,6 +7,7 @@
 #
 
 node.default['rabbitmq']['cluster'] = true
+include_recipe 'rabbitmq::default'
 
 rabbitmq_service = service node['rabbitmq']['service_name'] do
   supports restart: true, status: true
