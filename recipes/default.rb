@@ -5,7 +5,6 @@
 # Copyright (C) 2015 Sunggun Yu
 # Copyright (C) 2015 Bloomberg Finance L.P.
 #
-
 node.default['rabbitmq']['cluster'] = true
 include_recipe 'rabbitmq::default'
 
