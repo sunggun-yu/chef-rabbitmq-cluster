@@ -1,16 +1,17 @@
 # rabbitmq-cluster Cookbook
+Installs and configures a RabbitMQ cluster.
 
-This cookbook is wrapper of Opscode rabbitmq cookbook. It configures rabbitmq cluster by executing rabbitmqctl command.
-
-Please take a look at the Vagrant file and roles directory as an example.
+This cookbook builds upon the [rabbitmq cookbook][1] which is used
+within the Chef Server itself. It properly sets the attributes needed
+to build a RabbitMQ cluster using the `rabbitmqctl` commands.
 
 ## Supported Platforms
-rabbitmq-cluster cookbook has tested on the Vagrant box in below.
+- Ubuntu 12.04, 14.04
+- CentOS (RHEL) 5.11, 6.6
 
-- ubuntu/trusty64
-- ubuntu/precise64
-- chef/centos-6.5
-- chef/debian-7.7
+## Attributes
+## Usage
+## Resources/Providers
 
 
 ## Attributes
@@ -82,7 +83,7 @@ Include `rabbitmq-cluster` in your node's `run_list`:
 There are 2 LWRP for RabbitMQ cluster
 
 ### Join cluster
-Join the slave node into the cluster. It will be skipped if node is master or node is already joined in cluster. 
+Join the slave node into the cluster. It will be skipped if node is master or node is already joined in cluster.
 
 ```
 rabbitmq_cluster node['rabbitmq-cluster']['master_node_name'] do
@@ -113,22 +114,4 @@ end
  - `:cluster_node_type` : `disc` or `ram`
 
 
-## License and Authors
-
-Author:: Sunggun Yu (sunggun.dev@gmail.com)
-
-```text
-Copyright (c) 2015, Sunggun Yu
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-```
+[1]: https://github.com/opscode-cookbooks/rabbitmq
