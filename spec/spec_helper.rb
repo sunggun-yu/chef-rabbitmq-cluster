@@ -2,6 +2,9 @@ require 'chefspec'
 require 'chefspec/berkshelf'
 
 RSpec.configure do |config|
+  config.platform = 'ubuntu'
+  config.version = '12.04'
+
   Kernel.srand config.seed
   config.order = :random
 
@@ -23,11 +26,5 @@ RSpec.configure do |config|
   config.mock_with :rspec do |mocks|
     mocks.syntax = :expect
     mocks.verify_partial_doubles = true
-  end
-end
-
-RSpec.shared_context 'recipe tests', type: :recipe do
-  def node_attributes(attributes={})
-    attributes.merge(platform: 'ubuntu', version: '12.04')
   end
 end
