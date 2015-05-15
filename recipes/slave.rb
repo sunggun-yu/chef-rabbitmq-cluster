@@ -8,7 +8,7 @@
 return if Chef::Config[:solo]
 
 m = search(:node, "chef_environment:#{node.chef_environment} AND tags:rabbitmq.master").first
-node.default['rabbitmq-cluster']['master_node_name'] = "rabbit@#{m['hostname']}"
+node.default['rabbitmq-cluster']['master_node_name'] = "rabbit@#{m['fqdn']}"
 include_recipe 'rabbitmq-cluster::default'
 
 node.tag('rabbitmq.slave')
