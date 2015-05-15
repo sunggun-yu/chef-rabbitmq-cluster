@@ -5,8 +5,9 @@
 # Copyright (C) 2015 Sunggun Yu <sunggun.dev@gmail.com>
 # Copyright (C) 2015 Bloomberg Finance L.P.
 #
+
 node.default['rabbitmq']['cluster'] = true
-include_recipe 'rabbitmq::default'
+include_recipe 'rabbitmq::plugin_management'
 
 rabbitmq_service = service node['rabbitmq']['service_name'] do
   supports restart: true, status: true
