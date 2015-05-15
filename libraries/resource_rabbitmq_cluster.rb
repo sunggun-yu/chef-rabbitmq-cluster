@@ -15,7 +15,6 @@ class Chef::Resource::RabbitmqCluster < Chef::Resource::LWRPBase
   attribute(:cluster_name,
     kind_of: String,
     name_attribute: true,
-    required: true,
     cannot_be: :empty)
   attribute(:node_type,
     kind_of: String,
