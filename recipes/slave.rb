@@ -11,4 +11,4 @@ m = search(:node, "chef_environment:#{node.chef_environment} AND tags:rabbitmq.m
 node.default['rabbitmq-cluster']['master_node_name'] = "rabbit@#{m['hostname']}"
 include_recipe 'rabbitmq-cluster::default'
 
-node.tag('rabbitmq.master')
+node.tag('rabbitmq.slave')
