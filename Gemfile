@@ -1,4 +1,5 @@
 source 'https://rubygems.org'
+gem 'chef-vault', '~> 2.6'
 
 group :lint do
   gem 'foodcritic'
@@ -27,8 +28,6 @@ group :integration do
 end
 
 group :development do
-  gem 'chef-sugar'
-  gem 'chef-vault'
   gem 'guard-kitchen'
   gem 'guard-foodcritic'
   gem 'guard-rspec'

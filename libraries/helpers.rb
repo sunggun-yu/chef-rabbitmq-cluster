@@ -8,10 +8,11 @@
 
 module RabbitmqClusterCookbook
   module Helpers
-    def rabbitmqctl_eval(*args)
-      command = Mixlib::ShellOut.new("rabbitmqctl eval #{args.join(' ')}")
-      command.environment['HOME'] = ENV.fetch('HOME', '/root')
+    def run_command(*args)
+      command = Mixlib::ShellOut.new(*args)
+      command.environment = new_resource.environment
       command.run_command
+      command.error!
       command.stdout.strip
     end
   end

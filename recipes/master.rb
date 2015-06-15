@@ -6,7 +6,5 @@
 # Copyright (C) 2015 Bloomberg Finance L.P.
 #
 
-node.default['rabbitmq-cluster']['master_node_name'] = "rabbit@#{node['fqdn']}"
+node.default['rabbitmq-cluster']['service']['cluster_role_type'] = 'master'
 include_recipe 'rabbitmq-cluster::default'
-
-node.tag('rabbitmq.master')

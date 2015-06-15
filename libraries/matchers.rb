@@ -7,15 +7,17 @@
 #
 
 if defined?(ChefSpec)
-  def create_rabbitmq_cluster(resource_name)
-    ChefSpec::Matchers::ResourceMatcher.new(:rabbitmq_cluster, :create, resource_name)
+  %i{create delete}.each do |action|
+    %w{config user parameter policy vhost}.each do |resource|
+      define_method(:"#{action}_rabbitmq_#{resource}") do |resource_name|
+        ChefSpec::Matchers::ResourceMatcher.new(:"rabbitmq_#{resource}", action, resource_name)
+      end
+    end
   end
 
-  def delete_rabbitmq_cluster(resource_name)
-    ChefSpec::Matchers::ResourceMatcher.new(:rabbitmq_cluster, :delete, resource_name)
-  end
-
-  def update_rabbitmq_cluster(resource_name)
-    ChefSpec::Matchers::ResourceMatcher.new(:rabbitmq_cluster, :update, resource_name)
+  %i{enable disable stop start restart reload}.each do |action|
+    define_method(:"#{action}_rabbitmq_service") do |resource_name|
+      ChefSpec::Matchers::ResourceMatcher.new(:rabbitmq_service, action, resource_name)
+    end
   end
 end

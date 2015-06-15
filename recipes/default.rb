@@ -5,17 +5,23 @@
 # Copyright (C) 2015 Sunggun Yu <sunggun.dev@gmail.com>
 # Copyright (C) 2015 Bloomberg Finance L.P.
 #
-
-node.default['rabbitmq']['cluster'] = true
-include_recipe 'rabbitmq::plugin_management'
-
-rabbitmq_service = service node['rabbitmq']['service_name'] do
-  supports restart: true, status: true
-  action :nothing
+poise_service_user node['rabbitmq-cluster']['service_user'] do
+  group node['rabbitmq-cluster']['service_group']
 end
 
-rabbitmq_cluster node['rabbitmq-cluster']['master_node_name'] do
-  node_type node['rabbitmq-cluster']['cluster_node_type']
-  action [:create, :update]
-  notifies :restart, "service[#{rabbitmq_service.name}]", :delayed
+config = rabbitmq_config node['rabbitmq-cluster']['service_name'] do |r|
+  user node['rabbitmq-cluster']['service_user']
+  group node['rabbitmq-cluster']['service_group']
+
+  node['rabbitmq-cluster']['config'].each_pair { |k, v| r.send(k, v) }
+  notifies :restart, "rabbitmq_service[#{name}]", :delayed
+end
+
+rabbitmq_service node['rabbitmq-cluster']['service_name'] do |r|
+  user node['rabbitmq-cluster']['service_user']
+  group node['rabbitmq-cluster']['service_group']
+  config_path config.path
+
+  node['rabbitmq-cluster']['service'].each_pair { |k, v| r.send(k, v) }
+  action [:enable, :start]
 end
