@@ -13,7 +13,7 @@ class Chef::Resource::RabbitmqCluster < Chef::Resource
   actions(:create, :update, :delete)
 
   attribute(:cluster_name, kind_of: String, name_attribute: true)
-  attribute(:node_type, kind_of: String, default: 'disc', regex: /^(disc|ram)$/)
+  attribute(:node_type, equal_to: %w{disc ram}, default: 'disc')
 end
 
 class Chef::Provider::RabbitmqCluster < Chef::Provider
