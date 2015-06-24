@@ -14,7 +14,7 @@ class Chef::Resource::RabbitmqVhost < Chef::Resource
   attribute(:vhost, kind_of: String, name_attribute: true)
   attribute(:environment, kind_of: Hash, default: {
     'PATH' => '/usr/lib/rabbitmq/bin:/usr/sbin:/usr/bin',
-    'HOME' => '/root'
+    'HOME' => '/var/lib/rabbitmq'
   })
 
   def exists?

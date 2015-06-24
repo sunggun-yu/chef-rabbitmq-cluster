@@ -19,7 +19,7 @@ class Chef::Resource::RabbitmqParameter < Chef::Resource
   attribute(:vhost, kind_of: String)
     attribute(:environment, kind_of: Hash, default: {
     'PATH' => '/usr/lib/rabbitmq/bin:/usr/sbin:/usr/bin',
-    'HOME' => '/root'
+    'HOME' => '/var/lib/rabbitmq'
   })
 
   action(:create) do

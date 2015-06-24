@@ -29,10 +29,6 @@ class Chef::Resource::RabbitmqService < Chef::Resource
   attribute(:data_path, kind_of: String, default: '/var/lib/rabbitmq')
   attribute(:log_path, kind_of: String, default: '/var/log/rabbitmq')
 
-  attribute(:erl_empd_address, kind_of: [String, NilClass], default: nil)
-  attribute(:node_name, kind_of: [String, NilClass], default: nil)
-  attribute(:node_ip_address, kind_of: [String, NilClass], default: nil)
-  attribute(:node_port, kind_of: [Integer, NilClass], default: nil)
   attribute(:ssl_verify, equal_to: [true, false], default: false)
 
   def command
@@ -40,12 +36,7 @@ class Chef::Resource::RabbitmqService < Chef::Resource
   end
 
   def default_environment
-    { 'CONFIG_FILE' => config_path }.tap do |h|
-      h.merge('ERL_EPMD_ADDRESS' => erl_empd_address) unless erl_empd_address.nil?
-      h.merge('NODE_NAME' => node_name) unless node_name.nil?
-      h.merge('NODE_IP_ADDRESS' => node_ip_address) unless node_ip_address.nil?
-      h.merge('NODE_PORT' => node_port) unless node_port.nil?
-    end
+    { 'CONFIG_FILE' => config_path, 'PATH' => '/usr/lib/rabbitmq:/usr/sbin:/sbin:/usr/bin:/bin' }
   end
 
   def ssl?
@@ -67,34 +58,18 @@ class Chef::Provider::RabbitmqService < Chef::Provider
   include PoiseService::ServiceMixin
   include RabbitmqClusterCookbook::Helpers
 
-  def load_current_resource
-    cluster_name = rabbitmqctl_eval("'binary_to_list(rabbit_nodes:cluster_name()).'").gsub(/"/, '')
-    node_type = rabbitmqctl_eval("'rabbit_mnesia:node_type().'")
-
-    @current_resource = Chef::Resource::RabbitmqService.new(new_resource.name)
-    @current_resource.cluster_name(cluster_name) unless cluster_name.empty?
-    @current_resource.cluster_role_type(new_resource.cluster_role_type)
-    @current_resource.cluster_node_type(node_type) unless node_type.empty?
-
-    @current_resource
-  rescue Mixlib::ShellOut::ShellCommandFailed
-    @current_resource = nil
-  ensure
-    if @current_resource
-      Chef::Log.debug("#{@current_resource.name} cluster_name - #{@current_resource.cluster_name}")
-      Chef::Log.debug("#{@current_resource.name} cluster_role_type - #{@current_resource.cluster_role_type}")
-      Chef::Log.debug("#{@current_resource.name} cluster_node_type - #{@current_resource.cluster_node_type}")
-    end
-  end
-
   def rabbitmqctl_eval(*args)
-    run_command('rabbitmqctl eval', *args)
+    run_command('rabbitmqctl eval', args)
   end
 
   def action_enable
     notifying_block do
       include_recipe 'erlang::default'
       include_recipe 'chef-vault::default'
+
+      user_ulimit new_resource.user do
+        filehandle_limit 65_536
+      end
 
       directory new_resource.data_path do
         recursive true
@@ -155,18 +130,40 @@ class Chef::Provider::RabbitmqService < Chef::Provider
         action :upgrade
         only_if { new_resource.install_method == 'package' }
       end
+
+      file ::File.join(::File.dirname(new_resource.config_path), 'rabbitmq-env.conf') do
+        content new_resource.environment.map { |kv| kv.join('=') }.join("\n")
+        mode '0644'
+        owner new_resource.user
+        group new_resource.group
+      end
     end
     super
   end
 
   def action_start
     super
+    cluster_name = rabbitmqctl_eval("'binary_to_list(rabbit_nodes:cluster_name()).'").gsub(/"/, '')
+    node_type = rabbitmqctl_eval("'rabbit_mnesia:node_type().'")
+
     notifying_block do
+      execute 'rabbitmqctl start_app' do
+        environment new_resource.environment
+        guard_interpreter :default
+      end
+
+      execute "rabbitmqctl join_cluster #{new_resource.cluster_name}" do
+        environment new_resource.environment
+        guard_interpreter :default
+        not_if is_clustered?
+        not_if { new_resource.master? }
+      end
+
       execute "rabbitmqctl set_cluster_name #{new_resource.cluster_name}" do
         environment new_resource.environment
         guard_interpreter :default
         not_if is_clustered?
-        not_if { @current_resource && @current_resource.cluster_name == new_resource.cluster_name }
+        not_if { cluster_name == new_resource.cluster_name }
       end
 
       execute "rabbitmqctl set_cluster_node_type #{new_resource.cluster_node_type}" do
@@ -179,46 +176,20 @@ class Chef::Provider::RabbitmqService < Chef::Provider
         environment new_resource.environment
         guard_interpreter :default
         only_if is_clustered?
-        not_if { @current_resource && @current_resource.cluster_node_type == new_resource.cluster_node_type }
-      end
-
-      execute "rabbitmqctl join_cluster #{new_resource.cluster_name}" do
-        environment new_resource.environment
-        guard_interpreter :default
-        not_if is_clustered?
-        not_if { new_resource.master? }
-      end
-
-      execute 'rabbitmqctl start_app' do
-        environment 'HOME' => '/root'
-        guard_interpreter :default
+        not_if { node_type == new_resource.cluster_node_type }
       end
     end
-  end
-
-  def action_stop
-    notifying_block do
-      execute 'rabbitmqctl stop_app' do
-        environment 'HOME' => '/root'
-        guard_interpreter :default
-      end
-    end
-    super
   end
 
   def action_disable
     notifying_block do
       execute 'rabbitmqctl reset' do
-        environment 'HOME' => '/root'
+        environment new_resource.environment
         guard_interpreter :default
       end
 
       file new_resource.cookie_path do
         action :delete
-      end
-
-      service 'epmd' do
-        action :stop
       end
     end
     super
@@ -235,7 +206,6 @@ class Chef::Provider::RabbitmqService < Chef::Provider
   # @api private
   # @return [TrueClass, FalseClass]
   def is_clustered?
-    return false unless @current_resource
     rabbitmqctl_eval("'rabbit_mnesia:is_clustered().'") == 'true'
   end
 end

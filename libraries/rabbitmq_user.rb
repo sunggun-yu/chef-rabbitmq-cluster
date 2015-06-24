@@ -20,7 +20,7 @@ class Chef::Resource::RabbitmqUser < Chef::Resource
   attribute(:tag, kind_of: [Array, String], default: [])
     attribute(:environment, kind_of: Hash, default: {
     'PATH' => '/usr/lib/rabbitmq/bin:/usr/sbin:/usr/bin',
-    'HOME' => '/root'
+    'HOME' => '/var/lib/rabbitmq'
   })
 end
 

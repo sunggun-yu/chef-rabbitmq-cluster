@@ -23,5 +23,6 @@ rabbitmq_service node['rabbitmq-cluster']['service_name'] do |r|
   config_path config.path
 
   node['rabbitmq-cluster']['service'].each_pair { |k, v| r.send(k, v) }
-  action [:enable, :start]
 end
+
+node['rabbitmq-cluster']['plugins'].each { |n| rabbitmq_plugin n }

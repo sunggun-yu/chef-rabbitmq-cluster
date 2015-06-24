@@ -84,11 +84,6 @@ class Chef::Resource::RabbitmqConfig < Chef::Resource
         recursive true
       end
 
-      file ::File.join(::File.dirname(new_resource.path), 'rabbitmq-env.conf') do
-        action :touch
-        mode '0640'
-      end
-
       file new_resource.path do
         content new_resource.to_erl
         mode '0640'

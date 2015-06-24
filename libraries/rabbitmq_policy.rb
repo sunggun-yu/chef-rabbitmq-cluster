@@ -21,7 +21,7 @@ class Chef::Resource::RabbitmqPolicy < Chef::Resource
   attribute(:apply_to, equal_to: %w{all queues exchanges})
     attribute(:environment, kind_of: Hash, default: {
     'PATH' => '/usr/lib/rabbitmq/bin:/usr/sbin:/usr/bin',
-    'HOME' => '/root'
+    'HOME' => '/var/lib/rabbitmq'
   })
 
   action(:create) do

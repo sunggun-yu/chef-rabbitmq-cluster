@@ -13,8 +13,8 @@ class Chef::Resource::RabbitmqPlugin < Chef::Resource
 
   attribute(:plugin, kind_of: String, name_attribute: true)
   attribute(:environment, kind_of: Hash, default: {
-    'PATH' => '/usr/lib/rabbitmq/bin:/usr/sbin:/usr/bin',
-    'HOME' => '/root'
+    'PATH' => '/usr/lib/rabbitmq/bin:/usr/sbin:/sbin:/usr/bin:/bin',
+    'HOME' => '/var/lib/rabbitmq'
   })
 
   def enabled?

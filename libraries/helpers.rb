@@ -9,8 +9,7 @@
 module RabbitmqClusterCookbook
   module Helpers
     def run_command(*args)
-      command = Mixlib::ShellOut.new(*args)
-      command.environment = new_resource.environment
+      command = Mixlib::ShellOut.new(*args.flatten, env: new_resource.environment)
       command.run_command
       command.error!
       command.stdout.strip
